@@ -1,49 +1,50 @@
 // ====== CONFIGURATION ======
-var WA_NUMBER = "91XXXXXXXXXX"; // Replace with your country code + phone number (without +)
+var WA_NUMBER = "91XXXXXXXXXX"; // Replace with your WhatsApp number (country code without +)
+var GOOGLE_SHEET_WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE"; 
 // ============================
 
 var posts = [
   {
-    t: "Mastering Search Engine Optimization (SEO) in 2026",
+    t: "The Complete Search Engine Optimization Strategy for 2026",
     c: "SEO",
     e: "🔍",
-    s: "Essential technical and on-page strategies to rank on Google search.",
-    b: "<p>Search Engine Optimization continues to be the highest-ROI channel for long-term organic growth.</p><h3>Key Pillars of Modern SEO</h3><p><b>1) On-Page Optimization:</b> Align content intent with targeted user queries. <b>2) Technical Precision:</b> Ensure optimal core web vitals, mobile speed, and structured data schemas. <b>3) Authority Building:</b> Acquire high-quality backlinks and digital PR mentions.</p>"
+    s: "A deep dive into Core Web Vitals, AI search engines, technical audits, and organic ranking frameworks.",
+    b: "<p>Search Engine Optimization (SEO) has evolved rapidly. Modern search algorithms prioritize user intent, content depth, technical speed, and natural entity relationships.</p><h3>1. Technical Foundation</h3><p>Ensuring fast loading times, proper Schema structure, zero indexing errors, and clean site architecture is essential for search bots to index your site efficiently.</p><h3>2. Semantic Keyword Optimization</h3><p>Search engines now parse semantic meaning rather than basic keyword repetition. Focus on comprehensive content coverage that answers user questions thoroughly.</p><h3>3. Domain Authority & Strategic Outreach</h3><p>High-quality editorial backlinks remain vital for building domain authority on Google. Focus on niche-relevant PR outreach and authoritative guest contributions.</p>"
   },
   {
-    t: "Scaling E-Commerce Sales with Targeted Meta Ads",
+    t: "Scaling E-Commerce Sales with Meta Ads & Conversions API",
     c: "Meta Ads",
     e: "📱",
-    s: "A complete framework for Facebook & Instagram ad creative testing.",
-    b: "<p>Meta Ads allow hyper-targeted advertising based on real-time interest and demographic data.</p><h3>Execution Framework</h3><p>1) Clear campaign objectives 2) Dynamic ad creatives testing 3) Pixel tracking & Conversions API 4) Retargeting custom audiences.</p>"
+    s: "How to setup CAPI, optimize dynamic creative testing, and achieve high ROAS on Facebook & Instagram.",
+    b: "<p>Scaling paid media on Facebook and Instagram requires structured creative testing and accurate server-side data attribution.</p><h3>1. Conversions API (CAPI) Integration</h3><p>Server-side tracking bypasses browser tracking limitations to pass accurate sales conversion data back to Meta's optimization algorithms.</p><h3>2. High-Converting Ad Creative Framework</h3><p>Test multiple ad formats—including UGC videos, carousel feature displays, and dynamic product catalog ads—to find winning creative variations.</p>"
   },
   {
-    t: "Google Ads vs Organic SEO: Strategic Comparison",
+    t: "Google PPC Search Ads vs Organic SEO: Maximizing Growth",
     c: "Google Ads",
     e: "🎯",
-    s: "When to run search campaigns versus organic SEO investment.",
-    b: "<p>Both Search Engine Optimization and Google PPC Ads serve distinct marketing funnel stages.</p><h3>Google PPC</h3><p>Delivers instantaneous traffic and high-intent sales conversion.</p><h3>SEO</h3><p>Builds compounding long-term domain authority and cost-effective organic leads.</p>"
+    s: "Understanding when to deploy pay-per-click search ads versus investing in long-term organic ranking.",
+    b: "<p>Both Google PPC Ads and Search Engine Optimization play vital roles in an omnichannel digital strategy.</p><h3>1. Immediate Intent Capture with Google PPC</h3><p>Google Search Ads capture immediate transactional buyers, allowing startups to generate instant sales inquiries.</p><h3>2. Compounding Growth with SEO</h3><p>While SEO takes time to build momentum, it generates sustainable organic traffic at a fraction of paid PPC costs over the long term.</p>"
   },
   {
-    t: "Maximizing ROI with WhatsApp Marketing Automation",
+    t: "Maximizing Conversion ROI with WhatsApp Business API",
     c: "WhatsApp",
     e: "💬",
-    s: "Achieving 90%+ open rates with direct broadcast channels.",
-    b: "<p>Direct messaging provides unparalleled engagement rates compared to traditional email marketing.</p><h3>Best Execution</h3><p>Send personalized offers, set up quick chatbot replies, and automate transactional notifications using official WhatsApp APIs.</p>"
+    s: "Achieve 90%+ open rates with automated broadcast sequences and AI chatbots.",
+    b: "<p>Direct messaging channels provide unmatched customer engagement rates compared to traditional email broadcasts.</p><h3>1. Broadcast Sequences & Dynamic Buttons</h3><p>Send personalized promotional announcements with clickable call-to-action buttons directly into customer inboxes.</p><h3>2. 24/7 Conversational AI Support</h3><p>Automate lead qualification and FAQ handling with intelligent WhatsApp chatbots that operate continuously.</p>"
   },
   {
-    t: "High-Converting SMS Campaigns for Retail & B2B",
+    t: "High-Volume Bulk SMS Marketing & DLT Compliance",
     c: "SMS Marketing",
     e: "✉️",
-    s: "Instant delivery and high open rates for time-sensitive offers.",
-    b: "<p>SMS marketing ensures immediate communication reach regardless of mobile internet connectivity.</p>"
+    s: "Deploying high-speed promotional and transactional SMS broadcasts across global networks.",
+    b: "<p>Bulk SMS provides instant direct-to-device delivery for time-sensitive announcements, flash sales, and transactional OTP verifications.</p>"
   },
   {
-    t: "The Direct Impact of Brand Visuals on Ad Conversion",
+    t: "The Role of High-Impact Visual Branding in Ad Performance",
     c: "Graphic Design",
     e: "🎨",
-    s: "How professional design builds brand trust and increases CTR.",
-    b: "<p>High-quality brand visuals and ad creatives immediately grab user attention and double campaign conversion performance.</p>"
+    s: "How professional graphic design increases click-through rates and lowers cost per acquisition.",
+    b: "<p>Eye-catching ad creative designs capture immediate user attention in busy social feeds, significantly improving Click-Through Rates (CTR) and driving down customer acquisition costs.</p>"
   }
 ];
 
@@ -54,7 +55,7 @@ function card(p, i) {
                '<small>' + p.c + '</small>' +
                '<h3>' + p.t + '</h3>' +
                '<p>' + p.s + '</p>' +
-               '<b style="color:var(--p);font-size:.9rem;display:inline-block;margin-top:10px">Read Full Insight →</b>' +
+               '<b style="color:var(--p);font-size:.9rem;display:inline-block;margin-top:10px">Read Full Article →</b>' +
             '</div>' +
          '</div>';
 }
@@ -90,7 +91,7 @@ function route() {
     h = 'blog';
   }
 
-  // Handle Hash Section Links
+  // Handle Hash Links
   if (h === 'services' || h === 'portfolio' || h === 'pricing' || h === 'lead') {
     sec = h;
     h = 'home';
@@ -119,16 +120,42 @@ function route() {
   }
 }
 
+// LEAD SUBMISSION (GOOGLE SHEET CAPTURE + WHATSAPP REDIRECT)
 function sendLead(e) {
   e.preventDefault();
   var f = e.target;
-  var m = "Hello Pixelize Media! 👋%0A*Name:* " + encodeURIComponent(f.name.value) +
-          "%0A*Phone:* " + encodeURIComponent(f.phone.value) +
-          "%0A*Email:* " + encodeURIComponent(f.email.value) +
-          "%0A*Service:* " + encodeURIComponent(f.service.value) +
-          "%0A*Message:* " + encodeURIComponent(f.msg.value);
-  window.open("https://wa.me/" + WA_NUMBER + "?text=" + m, "_blank");
-  alert("Thank you! Your growth inquiry has been forwarded to WhatsApp.");
+  
+  var payload = {
+    name: f.name.value,
+    phone: f.phone.value,
+    email: f.email.value,
+    service: f.service.value,
+    msg: f.msg.value
+  };
+
+  // 1. Submit Data to Google Sheets Web App
+  if (GOOGLE_SHEET_WEB_APP_URL && GOOGLE_SHEET_WEB_APP_URL !== "https://script.google.com/macros/s/AKfycby7KsdKXgMSJkMzudIVz2CaWi0dGqbRTufUcvJ4znCO7UeP008JrZxzzM648bioFbqHfA/exec") {
+    fetch(GOOGLE_SHEET_WEB_APP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(function(err) {
+      console.error("Google Sheet Logging Error: ", err);
+    });
+  }
+
+  // 2. Format WhatsApp Message and Open Window
+  var m = "Hello Pixelize Media! 👋%0A*New Website Inquiry:*%0A" +
+          "*Name:* " + encodeURIComponent(payload.name) + "%0A" +
+          "*Phone:* " + encodeURIComponent(payload.phone) + "%0A" +
+          "*Email:* " + encodeURIComponent(payload.email) + "%0A" +
+          "*Service:* " + encodeURIComponent(payload.service) + "%0A" +
+          "*Message:* " + encodeURIComponent(payload.msg);
+
+  window.open("https://wa./" + WA_NUMBER + "?text=" + m, "_blank");
+
+  alert("Thank you! Your details have been submitted and logged successfully.");
   f.reset();
   return false;
 }
