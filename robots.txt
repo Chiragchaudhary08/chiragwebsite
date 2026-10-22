@@ -1,0 +1,11 @@
+# robots.txt for https://pixelizemedia.in/
+User-agent: *
+Allow: /
+Disallow: /scratch/
+Disallow: /tmp/
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Official XML Sitemap
+Sitemap: https://pixelizemedia.in/sitemap.xml
