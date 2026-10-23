@@ -72,7 +72,7 @@ body {
   background: var(--white);
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -205,7 +205,7 @@ h1, h2, h3, h4, h5 {
 }
 
 h1 {
-  font-size: clamp(1.85rem, 5vw, 3.8rem);
+  font-size: clamp(1.85rem, 4.4vw, 3.4rem);
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -230,7 +230,9 @@ p {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  display: inline-block;
+  display: inline;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .badge-pill {
@@ -1229,6 +1231,7 @@ section {
    SERVICE CARDS (INTERACTIVE & RICH)
    ======================================================== */
 .card {
+  text-align: left;
   background: var(--white);
   border-radius: var(--r-lg);
   padding: 28px;
@@ -1927,11 +1930,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
   gap: 10px;
 }
 
-.chk-list li::before {
-  content: '✓';
+.chk-list li i {
   color: var(--growth-green);
-  font-weight: 900;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  margin-top: 5px;
   flex-shrink: 0;
 }
 
@@ -2482,10 +2484,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
   gap: 10px;
 }
 
-.lead-checks li::before {
-  content: '✓';
+.lead-checks li i {
   color: var(--growth-green);
-  font-weight: 900;
+  flex-shrink: 0;
 }
 
 .direct-contact-mini {
@@ -2909,10 +2910,16 @@ footer a:hover {
 }
 
 .copy {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 0;
   margin-top: 40px;
-  padding: 20px 0;
+  padding-top: 0;
+  padding-bottom: 20px;
   width: 100%;
+}
+
+.copy-flex {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 20px;
 }
 
 .copy-flex {
@@ -2925,6 +2932,304 @@ footer a:hover {
   gap: 12px;
 }
 
+
+/* ========================================================
+   ★ FIXES & MISSING STYLES (alignment, fonts, spacing)
+   ======================================================== */
+
+/* ---- Utility colours (were used in HTML but never defined) ---- */
+.text-green { color: var(--growth-green); }
+.text-gold  { color: #f5a623; }
+.text-muted { color: var(--mut); }
+
+/* ---- Every grid child / column is allowed to shrink (no sideways overflow) ---- */
+.two > *, .hero-grid > *, .lead-box > *, .roi-calc-container > *, .grid > *, footer .fg > * {
+  min-width: 0;
+}
+
+/* ---- Announcement pill ---- */
+.announcement-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 3px 12px;
+  border-radius: var(--r-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.announcement-text > span { color: #fff; }
+
+/* ---- Hero ---- */
+.hero-text { min-width: 0; }
+.hero-graphic { min-width: 0; width: 100%; }
+.hero-main-title { margin: 0; }
+.hero-main-title .grad { padding-bottom: 0.06em; }
+.hero-text .tag-row { margin-bottom: 18px; }
+.hero-lead { max-width: 640px; }
+
+.stat-icon-wrap {
+  font-size: 1.35rem;
+  color: var(--p-light);
+  margin-bottom: 6px;
+  line-height: 1;
+}
+
+.hero-grid { grid-template-columns: 1.32fr 1fr; gap: 44px; }
+.hero-btns { gap: 14px; }
+.hero-btns .btn { flex: 0 1 auto; }
+.btn-hero { padding: 15px 26px; font-size: 0.97rem; }
+.btn-hero-alt { padding: 15px 24px; font-size: 0.97rem; }
+.hero-roas-banner .growth-chip { flex-shrink: 0; }
+
+/* ---- Free website audit form ---- */
+.audit-inline-form {
+  align-items: center;
+}
+
+.audit-input-wrap {
+  position: relative;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.audit-input-wrap .input-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d9c8ef;
+  font-size: 0.95rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.audit-input-wrap .audit-input {
+  width: 100%;
+  padding-left: 46px;
+}
+
+.btn-audit {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* ---- Service cards (8 cards = clean 4 x 2 on desktop) ---- */
+.service-cards {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+  text-align: left;
+}
+
+.service-card {
+  cursor: pointer;
+  border-top: 4px solid var(--p-accent);
+  padding: 26px 22px 24px;
+  text-align: left;
+  align-items: stretch;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-top-color: var(--p);
+  border-color: var(--border-hover);
+}
+
+.service-card:hover .card-link {
+  color: var(--p-accent);
+  transform: translateX(4px);
+}
+
+.service-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.service-card-top .ic { margin-bottom: 0; }
+
+.service-tag {
+  background: var(--soft-alt);
+  color: var(--p);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.service-card h3 {
+  font-size: 1.12rem;
+  line-height: 1.35;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.service-card p {
+  font-size: 0.9rem;
+  line-height: 1.62;
+  flex: 1;
+  text-align: left;
+}
+
+.service-card .card-features-mini {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.service-card .card-features-mini span {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.service-card .card-features-mini i { margin-top: 3px; flex-shrink: 0; }
+
+.service-card .card-link { display: block; align-self: stretch; line-height: 1.45; }
+.service-card .card-link i { margin-left: 4px; font-size: 0.85em; }
+
+/* ---- Cards that used to inherit centered text ---- */
+.interactive-card, .port-card, .blog-card, .testimonial-card,
+.about-stat-box, .value-card { text-align: left; }
+
+.blog-body-wrap h3, .blog-body-wrap p { text-align: left; }
+
+.about-stat-box, .value-card { border-top: 4px solid var(--p-accent); }
+
+/* ---- Pricing alignment ---- */
+.price-card .price-header { display: flex; flex-direction: column; align-items: center; }
+.price-card .price-subtitle { max-width: 320px; margin-left: auto; margin-right: auto; }
+.price-card .btn { margin-top: auto; }
+.price-card.popular .pop-badge { align-self: center; }
+
+/* ---- Lead / contact forms ---- */
+.lead-form-card p, .contact-form-card p { color: var(--mut); margin: 0 0 16px; font-size: 0.9rem; }
+.lead-form-card label, .contact-form-card label { color: var(--dark); }
+.lead-form-card .form-privacy-note, .contact-form-card .form-privacy-note { color: var(--mut-light); margin-top: 10px; }
+.modal-form { display: block; }
+.res-cta { margin-top: 22px; }
+.roi-calc-inputs { min-width: 0; }
+
+/* ---- Blog search ---- */
+.blog-search-input-wrap { position: relative; width: 100%; }
+.blog-search-input-wrap .search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--mut-light);
+  pointer-events: none;
+}
+.blog-search-input-wrap #blogSearchInput { padding-left: 46px; }
+
+/* ---- Inner page header (.ph) : was completely unstyled ---- */
+.ph {
+  background: linear-gradient(135deg, var(--p-darker) 0%, var(--p-dark) 50%, var(--p) 100%);
+  color: #fff;
+  padding: 64px 0 56px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ph::after {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(168, 79, 211, 0.35) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ph .wrap { position: relative; z-index: 2; max-width: 920px; }
+.ph h1 { color: #fff; font-size: clamp(1.8rem, 4.2vw, 2.9rem); margin-bottom: 14px; }
+.ph p { color: #e6d9f5; max-width: 720px; margin: 0 auto; font-size: 1.05rem; }
+.ph .badge-pill { margin-bottom: 18px; }
+
+/* ---- Article / service detail text (.doc) ---- */
+.doc { max-width: 880px; }
+.doc > h2 { font-size: clamp(1.4rem, 2.8vw, 1.9rem); margin: 38px 0 12px; }
+.doc > h3 { font-size: 1.2rem; margin: 26px 0 8px; color: var(--p-dark); }
+.doc > p { line-height: 1.85; margin-bottom: 16px; font-size: 1rem; }
+.doc > p strong { color: var(--dark); }
+.doc ul, .doc ol { margin: 0 0 18px 22px; color: var(--mut); line-height: 1.8; }
+.doc > .service-detail-banner { margin-bottom: 18px; }
+
+.box.glow-box {
+  background: linear-gradient(135deg, var(--p-darker) 0%, var(--p-dark) 50%, var(--p) 100%);
+  border-radius: var(--r-xl);
+  padding: 44px 32px;
+  text-align: center;
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.box.glow-box h2 { color: #fff; margin: 0 0 4px; font-size: clamp(1.4rem, 3vw, 2rem); }
+.box.glow-box p { color: #e9ddf5; max-width: 620px; margin-left: auto; margin-right: auto; }
+
+/* ---- Footer ---- */
+.footer-col-brand { min-width: 0; }
+.footer-logo-link { display: inline-block; margin: 0; }
+.footer-logo-link:hover { transform: none; }
+.footer-contact-item { display: block; }
+.copy-sub { margin: 0; text-align: right; }
+.copy-flex p { margin: 0; color: #8c7ba8; }
+
+/* ---- Scroll reveal (replaces the old broken GSAP fade) ---- */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-up.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-up { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .pixel-box, .pulse, .ticker-track { animation: none !important; }
+}
+
+/* ---- Responsive for the fixes above ---- */
+@media (max-width: 1180px) {
+  .service-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+}
+
+@media (max-width: 880px) {
+  .copy-sub { text-align: center; }
+  .ph { padding: 46px 0 38px; }
+}
+
+@media (max-width: 680px) {
+  .service-cards { grid-template-columns: minmax(0, 1fr) !important; }
+  .service-card { padding: 22px 18px; }
+  .audit-input-wrap { flex: 1 1 100%; }
+  .btn-audit { width: 100%; }
+  .box.glow-box { padding: 32px 18px; }
+  .ph h1 { font-size: clamp(1.55rem, 6.4vw, 2.1rem); }
+  .doc > p { font-size: 0.97rem; line-height: 1.75; }
+}
+
 /* ========================================================
    RESPONSIVE DESIGN & MOBILE OPTIMIZATIONS
    ======================================================== */
@@ -2932,7 +3237,7 @@ footer a:hover {
 /* Tablet Breakpoint (1024px) */
 @media (max-width: 1024px) {
   .hero-grid, .two, .lead-box, .roi-calc-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 36px;
   }
   

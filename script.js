@@ -521,7 +521,8 @@ function route() {
       showPage('post');
       updatePageSEO('blog', foundPost);
       window.scrollTo(0, 0);
-      initGSAPAnimations();
+      currentPageId = 'post-' + foundPost.id;
+      initGSAPAnimations(false);
       return;
     }
     h = 'blog';
@@ -540,6 +541,8 @@ function route() {
   }
 
   // Show page
+  var pageChanged = (h !== currentPageId);
+  currentPageId = h;
   showPage(h);
   updatePageSEO(h, null);
 
@@ -562,78 +565,123 @@ function route() {
     window.scrollTo(0, 0);
   }
 
-  // Re-trigger GSAP / ScrollTrigger animations on view change
-  initGSAPAnimations();
+  // Play animations only when a new page is opened
+  initGSAPAnimations(pageChanged);
 }
 
 /**
  * ========================================================
- * 6. GSAP ANIMATIONS & SCROLLTRIGGERS
+ * 6. ANIMATIONS (FIXED: no more half-faded hero heading)
+ * - Hero entrance plays ONLY when the home page is opened
+ * - Uses fromTo + clearProps, so text always ends fully visible
+ * - Cards reveal on scroll with IntersectionObserver
  * ========================================================
  */
-function initGSAPAnimations() {
+var currentPageId = null;
+
+function animateHeroIn() {
+  var left = document.querySelectorAll('#p-home .gsap-hero-left > *');
+  var right = document.querySelector('#p-home .gsap-hero-right');
   if (typeof gsap === 'undefined') return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  // Hero Section Stagger
-  if (document.querySelector('.gsap-hero-left')) {
-    gsap.from('.gsap-hero-left .tag-row, .gsap-hero-left h1, .gsap-hero-left .hero-lead, .gsap-hero-left .hero-btns, .gsap-hero-left .hero-trust-bar', {
-      duration: 0.9,
-      y: 35,
-      opacity: 0,
-      stagger: 0.12,
-      ease: 'power3.out'
-    });
+  gsap.killTweensOf(left);
+  gsap.fromTo(left,
+    { y: 28, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out', overwrite: true, clearProps: 'opacity,transform' }
+  );
+
+  if (right) {
+    gsap.killTweensOf(right);
+    gsap.fromTo(right,
+      { x: 30, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.9, delay: 0.15, ease: 'power3.out', overwrite: true, clearProps: 'opacity,transform' }
+    );
   }
+}
 
-  if (document.querySelector('.gsap-hero-right')) {
-    gsap.from('.gsap-hero-right', {
-      duration: 1.1,
-      x: 40,
-      opacity: 0,
-      ease: 'power3.out',
-      delay: 0.2
-    });
-  }
-
-  // Animated Numbers Counter for Stat Cards
-  document.querySelectorAll('.stat-num').forEach(function(el) {
+function animateCounters() {
+  document.querySelectorAll('#p-home .stat-num').forEach(function(el) {
     var target = parseFloat(el.getAttribute('data-target'));
-    if (!target) return;
-    
+    if (isNaN(target)) return;
+    var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+    var prefix = el.getAttribute('data-prefix') || '';
+    var suffix = el.getAttribute('data-suffix') || '';
+    function fmt(v) { return prefix + v.toFixed(decimals) + suffix; }
+
+    el.textContent = fmt(target); // always show the real final number first
+    if (typeof gsap === 'undefined') return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    if (el._counterTween) el._counterTween.kill();
     var obj = { val: 0 };
-    gsap.to(obj, {
+    el._counterTween = gsap.to(obj, {
       val: target,
-      duration: 2,
+      duration: 1.8,
       ease: 'power2.out',
-      onUpdate: function() {
-        if (target === 4) {
-          el.textContent = Math.floor(obj.val) + "+";
-        } else if (target === 250) {
-          el.textContent = Math.floor(obj.val) + "+";
-        } else if (target === 15) {
-          el.textContent = "₹" + Math.floor(obj.val) + "Cr+";
-        } else if (target === 98) {
-          el.textContent = (obj.val).toFixed(1) + "%";
-        }
-      }
+      onUpdate: function() { el.textContent = fmt(obj.val); },
+      onComplete: function() { el.textContent = fmt(target); }
     });
   });
+}
 
-  // ScrollTrigger reveals
-  if (typeof ScrollTrigger !== 'undefined') {
-    ScrollTrigger.batch('.interactive-card, .port-card, .price-card, .proc-card, .testimonial-card', {
-      interval: 0.1,
-      batchMax: 4,
-      onEnter: function(batch) {
-        gsap.to(batch, {
-          autoAlpha: 1,
-          y: 0,
-          stagger: 0.1,
-          overwrite: true
-        });
-      }
-    });
+var revealObserver = null;
+function initScrollReveal() {
+  if (!('IntersectionObserver' in window)) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver(function(entries) {
+      var delay = 0;
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        revealObserver.unobserve(el);
+        setTimeout(function() {
+          el.classList.add('in');
+          // remove helper classes afterwards so normal hover effects work again
+          setTimeout(function() { el.classList.remove('reveal-up', 'in'); }, 750);
+        }, delay);
+        delay += 90;
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
   }
+
+  // Safety net: if the observer ever misses a card, reveal anything already on screen
+  if (!window._revealSweepBound) {
+    window._revealSweepBound = true;
+    var sweepTimer = null;
+    var sweep = function() {
+      document.querySelectorAll('.reveal-up:not(.in)').forEach(function(el) {
+        var r = el.getBoundingClientRect();
+        if (r.height > 0 && r.top < window.innerHeight - 20) {
+          el.classList.add('in');
+          setTimeout(function() { el.classList.remove('reveal-up', 'in'); }, 750);
+        }
+      });
+    };
+    window.addEventListener('scroll', function() {
+      clearTimeout(sweepTimer);
+      sweepTimer = setTimeout(sweep, 350);
+    }, { passive: true });
+    setTimeout(sweep, 900);
+  }
+
+  var selector = '.service-card, .interactive-card, .port-card, .price-card, .proc-card, .testimonial-card, .blog-card, .value-card, .about-stat-box';
+  document.querySelectorAll(selector).forEach(function(el) {
+    if (el.getAttribute('data-reveal-bound')) return;
+    el.setAttribute('data-reveal-bound', '1');
+    el.classList.add('reveal-up');
+    revealObserver.observe(el);
+  });
+}
+
+function initGSAPAnimations(pageChanged) {
+  if (pageChanged && document.querySelector('#p-home.show')) {
+    animateHeroIn();
+    animateCounters();
+  }
+  initScrollReveal();
 }
 
 /**
@@ -949,7 +997,8 @@ window.addEventListener('scroll', function() {
   var st = 'scrollTop';
   var sh = 'scrollHeight';
 
-  var percent = (h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight) * 100;
+  var maxScroll = (h[sh] || b[sh]) - h.clientHeight;
+  var percent = maxScroll > 0 ? ((h[st] || b[st]) / maxScroll) * 100 : 0;
   var pBar = document.getElementById('readingProgress');
   if (pBar) {
     pBar.style.width = percent + "%";
@@ -980,13 +1029,16 @@ if (yrEl) {
   yrEl.textContent = new Date().getFullYear();
 }
 
-// Initialize Router & Event Listeners
+// Initialize Router & Event Listeners (runs exactly once)
 window.addEventListener('hashchange', route);
-window.addEventListener('DOMContentLoaded', function() {
+
+function startApp() {
   calculateROI();
   route();
-});
+}
 
-// Run immediate route
-calculateROI();
-route();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}
